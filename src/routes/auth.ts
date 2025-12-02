@@ -27,11 +27,12 @@ router.post('/login', async (req, res, next) => {
     }
 
     const token = signToken({ id: user.id, role: user.role });
+    const isProd = process.env.NODE_ENV === 'production';
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
     });
 
     res.json({
