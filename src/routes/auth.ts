@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../prisma';
-import { signToken } from '../middleware/auth';
+import { signToken, AuthUser } from '../middleware/auth';
 import { requireAuth } from '../middleware/auth';
 
 const router = Router();
@@ -26,7 +26,8 @@ router.post('/login', async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = signToken({ id: user.id, role: user.role });
+    const role = user.role as AuthUser['role'];
+    const token = signToken({ id: user.id, role });
     const isProd = process.env.NODE_ENV === 'production';
 
     res.cookie('token', token, {
